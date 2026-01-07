@@ -29,30 +29,6 @@ Background job runner
 Idempotent operations
 Clean API contracts
 
-Architecture Overview
-                ┌─────────────────────┐
-                │   Control Plane     │
-                │  (FastAPI + SQLite) │
-                │                     │
-                │  - Node Registry    │
-                │  - Job Scheduler    │
-                │  - Migration Logic  │
-                └─────────┬───────────┘
-                          │
-        ┌─────────────────┴─────────────────┐
-        │                                   │
-┌───────────────┐                   ┌───────────────┐
-│ Data Plane    │                   │ Data Plane    │
-│ Node 1        │                   │ Node 2        │
-│ (Object Store)│                   │ (Object Store)│
-│               │                   │               │
-│ - Chunks      │   ───────────▶    │ - Chunks      │
-│ - Manifests   │   Replication     │ - Manifests   │
-└───────────────┘                   └───────────────┘
-
-
-
-
 Project Structure
 
 distributed-data-replication-system/
@@ -144,3 +120,4 @@ Retry & exponential backoff
 Object versioning
 Checksummed streaming verification
 Leader election for control plane HA
+
