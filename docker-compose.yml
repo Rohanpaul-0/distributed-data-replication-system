@@ -1,0 +1,60 @@
+services:
+  control-plane:
+    build:
+      context: ./control-plane
+    container_name: replicator-control-plane
+    environment:
+      - CONTROL_PLANE_HOST=0.0.0.0
+      - CONTROL_PLANE_PORT=8000
+      - DATABASE_URL=sqlite:////app/data/control_plane.db
+      - LOG_LEVEL=info
+    ports:
+      - "8000:8000"
+    volumes:
+      - control_plane_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  node1:
+    build:
+      context: ./data-plane
+    container_name: replicator-node1
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "9001"]
+    environment:
+      - DATABASE_URL=sqlite:////app/data/node.db
+      - NODE_NAME=node1
+    ports:
+      - "9001:9001"
+    volumes:
+      - node1_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  node2:
+    build:
+      context: ./data-plane
+    container_name: replicator-node2
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "9002"]
+    environment:
+      - DATABASE_URL=sqlite:////app/data/node.db
+      - NODE_NAME=node2
+    ports:
+      - "9002:9002"
+    volumes:
+      - node2_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9002/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  control_plane_data:
+  node1_data:
+  node2_data:
